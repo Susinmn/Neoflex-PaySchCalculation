@@ -9,45 +9,40 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Created by Home on 29.02.2020.
  */
-@XmlType(name = "client")
+@XmlType(name = "creditdetail")
 @XmlRootElement
-public class Client{
-    //@XmlElement(name = "months")
-    private int months;
+public class CreditDetail {
+    //@XmlElement(name = "term")
+    private int term;
     //@XmlElement(name = "rate")
-    private float rate;
+    private BigDecimal rate;
     //@XmlElement(name = "amount")
-    private float amount;
-    //@XmlElement(name = "annuitypayment")
-    private float annuityPayment;
-    //@XmlElement(name = "differentiatedpayment")
-    private float differentiatedPayment;
+    private BigDecimal amount;
+    //@XmlElement(name = "paymenttype")
+    private String paymenttype;
 
-    public void setMonths(int months) { this.months = months; }
+    public void setTerm(int term) { this.term = term; }
 
-    public int getMonths() { return this.months; }
+    public int getTerm() { return this.term; }
 
-    public void setRate(float rate) { this.rate = rate; }
+    public void setRate(BigDecimal rate) { this.rate = rate; }
 
-    public float getRate() { return this.rate; }
+    public BigDecimal getRate() { return this.rate; }
 
-    public void setAmount(float amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public float getAmount() { return this.amount; }
+    public BigDecimal getAmount() { return this.amount; }
 
-    public void setAnnuityPayment(float annuityPayment) { /*NOP*/ }
+    public void setPaymenttype(String paymenttype) { this.paymenttype = paymenttype; }
 
-    public float getAnnuityPayment() { return this.annuityPayment; }
+    public String getPaymenttype() { return this.paymenttype; }
 
-    public void setDifferentiatedPayment(float differentiatedPayment) { /*NOP*/ }
-
-    public float getDifferentiatedPayment() { return this.differentiatedPayment; }
-
+/*
     public void calculateAnnuityPayment() {
-        float monthrRate = this.rate / 12;
-        float annuityRatio = monthrRate * (float) Math.pow(1 + monthrRate, 36) / ((float) Math.pow(1 + monthrRate, 36) - 1);
+        BigDecimal monthRate = this.rate / 12;
+        float annuityRatio = monthRate * (float) Math.pow(1 + monthRate, 36) / ((float) Math.pow(1 + monthRate, 36) - 1);
 
         this.annuityPayment = round(annuityRatio * this.amount, 2);
     }
@@ -58,6 +53,7 @@ public class Client{
 
         this.differentiatedPayment = round(this.amount * this.rate * monthDays / yearDays, 2);
     }
+    */
 
     private int getYearDays() {
         Calendar calendar = Calendar.getInstance();
@@ -70,11 +66,13 @@ public class Client{
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 
+    /*
     private static float round(float value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = new BigDecimal(Double.toString(value));
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        bd = bd.setScale(places, RoundingMode.CEILING);
         return (float)bd.doubleValue();
     }
+    */
 }

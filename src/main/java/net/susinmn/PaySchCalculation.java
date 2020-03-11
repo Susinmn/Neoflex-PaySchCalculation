@@ -4,7 +4,9 @@ import net.susinmn.Exeptions.ObjectToXMLExeption;
 import net.susinmn.Exeptions.XMLToObjectExeption;
 import net.susinmn.Exeptions.PaySchCalculationExeption;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by Home on 29.02.2020.
@@ -14,23 +16,18 @@ public class PaySchCalculation {
         /*NOP*/
     }
 
-    public ByteArrayOutputStream getAnnuityPayment(ByteArrayInputStream bais) throws PaySchCalculationExeption {
+    public OutputStream getPaymentsScheduleData(InputStream is) throws PaySchCalculationExeption {
         try {
-            Client client = new BaisToObject().getClientFromBais(bais);
-            client.calculateAnnuityPayment();
-            return new ObjectToBaos().getBaosFromClient(client);
-        } catch (XMLToObjectExeption ex) {
-            throw new PaySchCalculationExeption(Messages.XML_To_Object_Exeption.getMessage());
-        } catch (ObjectToXMLExeption ex) {
-            throw new PaySchCalculationExeption(Messages.Object_To_XML_Exeption.getMessage());
-        }
-    }
+            CreditDetail creditDetail = new CreditDetailDataReader().read(is);
 
-    public ByteArrayOutputStream getDifferentiatedPayment(ByteArrayInputStream bais) throws PaySchCalculationExeption {
-        try {
-            Client client = new BaisToObject().getClientFromBais(bais);
-            client.calculateDifferentiatedPayment();
-            return new ObjectToBaos().getBaosFromClient(client);
+            PaymentScheduleCalculationService paymentScheduleCalculation = new PaymentScheduleCalculation();
+            PaymentSchedule paymentSchedule = paymentScheduleCalculation.calculate(creditDetail);
+
+            PaymentsScheduleWriter paymentsScheduleDataWriter = new PaymentsScheduleDataWriter();
+            OutputStream os = new ByteArrayOutputStream();
+
+            paymentsScheduleDataWriter.write(paymentSchedule, os);
+            return os;
         } catch (XMLToObjectExeption ex) {
             throw new PaySchCalculationExeption(Messages.XML_To_Object_Exeption.getMessage());
         } catch (ObjectToXMLExeption ex) {
@@ -39,8 +36,8 @@ public class PaySchCalculation {
     }
 
     enum Messages {
-        Object_To_XML_Exeption("Ошибка преобразования объекта в xml"),
-        XML_To_Object_Exeption("Ошибка преобразования xml в объект");
+        Object_To_XML_Exeption("Error converting Object to XML"),
+        XML_To_Object_Exeption("Error converting XML to Object");
 
         private String message;
 
